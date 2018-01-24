@@ -1,0 +1,23 @@
+{
+  "name": "boilerfaves-server",
+  "version": "1.0.0",
+  "description": "A server for the BoilerFaves mobile app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Purdue-ACM-SIGAPP/BoilerFaves-Server.git"
+  },
+  "author": "Lucas Shanker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Purdue-ACM-SIGAPP/BoilerFaves-Server/issues"
+  },
+  "homepage": "https://github.com/Purdue-ACM-SIGAPP/BoilerFaves-Server#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "node-fetch": "^1.7.3"
+  }
+}
