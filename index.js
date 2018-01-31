@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 
+var mysql = require('mysql')
 const fetch = require('node-fetch')
 
 
@@ -36,7 +37,14 @@ function containsFood(foodList, food){
   return found;
 }
 
-console.log(getTodaysDate());
+
+
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  database: "boilerfaves"
+});
+
 
 fetch('https://api.hfs.purdue.edu/menus/v1/locations/', {
     method: 'GET',
@@ -91,6 +99,41 @@ fetch('https://api.hfs.purdue.edu/menus/v1/locations/', {
 
       //List of all foods available today (no duplicates)
       console.log(allFoods);
+      
+      con.connect(function(err) {
+        if (err) throw err;
+        console.log("Connected!");
+
+        for(var i = 0; i<allFoods.length; i++){
+          var food = allFoods[i];
+          var lookSQL = `SELECT * FROM foods WHERE name="${allFoods[i].Name}"`;
+
+      
+          con.query(lookSQL, 
+            (function(passedFood){
+              return function(err, result, fields){
+              if(err) throw err;
+              //console.log("Result: " + JSON.stringify(result));
+              
+              if(result.length <= 0){
+                //Food wasn't found in the database, need to add it
+                var insertSQL = `INSERT INTO foods (name, isVegetarian) VALUES ("${passedFood.Name}", ${passedFood.IsVegetarian})`;
+                console.log(insertSQL);
+                con.query(insertSQL, function (err, result) {
+                  if (err) throw err;
+                });
+              }
+            }
+          })(food));
+        
+      
+          console.log(lookSQL)
+
+        }
+
+        
+        
+      });
 
     });
 
