@@ -8,7 +8,6 @@ var con = mysql.createConnection({
     database: "boilerfaves"
   });
 
-
   app.get('/', (req, res) => 
       {
         const retrievalSQL = "SELECT * FROM foods ORDER BY name"
@@ -19,5 +18,5 @@ var con = mysql.createConnection({
           });
       });
   
-  app.listen(3000, () => console.log('Server is listening on port 3000!'))
+  app.listen(8080, () => console.log('Server is listening on port 3000!'))
   
