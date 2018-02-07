@@ -3,7 +3,7 @@ const app = express()
 
 var mysql = require('mysql')
 var con = mysql.createConnection({
-    host: "localhost",
+    host: "mysql",
     user: "root",
     database: "boilerfaves"
   });

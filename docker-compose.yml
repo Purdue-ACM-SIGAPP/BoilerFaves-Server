@@ -1,0 +1,13 @@
+version: '2'
+services:
+  boilerfaves:
+    build: .
+    ports:
+     - "80:4500"
+     - "5858:5858"
+    depends_on:
+     - mysql
+  mysql:
+    image: mysql
+    ports:
+    - "3306:3306"

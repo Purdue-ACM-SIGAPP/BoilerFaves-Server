@@ -1,3 +1,5 @@
+var passcodes = require('./passcodes').passcodes;
+
 var schedule = require('node-schedule')
 
 var mysql = require('mysql')
@@ -38,8 +40,9 @@ function containsFood(foodList, food){
 
 
 var con = mysql.createConnection({
-  host: "localhost",
+  host: "mysql",
   user: "root",
+  password: passcodes.mysql,
   database: "boilerfaves"
 });
 
