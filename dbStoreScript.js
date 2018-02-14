@@ -40,7 +40,7 @@ function containsFood(foodList, food){
 
 
 var con = mysql.createConnection({
-  host: "mysql",
+  host: "localhost",
   user: "root",
   password: passcodes.mysql,
   database: "boilerfaves"

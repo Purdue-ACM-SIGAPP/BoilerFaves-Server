@@ -1,10 +1,14 @@
+var passcodes = require('./passcodes').passcodes;
+
 const express = require('express')
 const app = express()
 
+
 var mysql = require('mysql')
 var con = mysql.createConnection({
-    host: "mysql",
+    host: "localhost",
     user: "root",
+    password: passcodes.mysql,
     database: "boilerfaves"
   });
 

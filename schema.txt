@@ -1,0 +1,10 @@
+CREATE DATABASE boilerfaves;
+
+use boilerfaves;
+
+CREATE TABLE 'foods' (
+    'id' int NOT NULL AUTO_INCREMENT,
+    'name' varchar(250) NOT NULL,
+    'isVegetarian' boolean,
+    PRIMARY KEY ('id')
+);
