@@ -39,15 +39,7 @@ function containsFood(foodList, food){
 }
 
 
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: passcodes.mysql,
-  database: "boilerfaves"
-});
 
-con.connect(function(err) {
-  if (err) throw err;
     
 
   //Once a day, connect to the dining api, store all available foods, then add them to the database as needed
@@ -55,85 +47,95 @@ con.connect(function(err) {
   //Should run every day at 1:02 AM
   schedule.scheduleJob("Fetch and Store", "0 2 1 * * *", () => {
 
-  fetch('https://api.hfs.purdue.edu/menus/v1/locations/', {
-      method: 'GET',
-      headers: {'Content-Type': 'application/json'},
-      body: '{}'
-    }).then(response => {
-      return response.json();
-    }).then(json => {
-
-      var fetchCalls = [];
-
-      for(var i =0; i<json.length; i++){
-        var url = 'https://api.hfs.purdue.edu/menus/v1/locations/' + json[i] + '/' + getTodaysDate() + '/';
-        
-        fetchCalls.push(fetch(url, {
-            method: 'GET',
-            headers: {'Content-Type': 'application/json'},
-            body: '{}'
-          }).then(response => {
-            return response.json();
-          }).then(json => {
-            var meals = [json.Breakfast, json.Lunch, json.Dinner];
-          
-            var foods = [];
-
-            for(var i = 0; i<meals.length; i++){
-              for(var j = 0; j<meals[i].length; j++){
-                for(var k = 0; k<meals[i][j].Items.length; k++){
-                if(!containsFood(foods, meals[i][j].Items[k])){
-                  foods.push(meals[i][j].Items[k]);
-                }
-                }
-              }
-            }
-
-            return foods;
-            
-          }).catch(err => {console.log(err);}));
-
-      }
-
-      Promise.all(fetchCalls).then(function(values){
-        //List of all foods available today (no duplicates)
-        var allFoods = [];
-
-        for(var i = 0; i<values.length; i++){
-          for(var j =0; j<values[i].length; j++){
-            if(!(containsFood(allFoods, values[i][j]))){
-              allFoods.push(values[i][j]);
-            }
-          }
-        }
-
-
-          for(var i = 0; i<allFoods.length; i++){
-            var food = allFoods[i];
-            var lookSQL = `SELECT * FROM foods WHERE name="${allFoods[i].Name}"`;
-        
-            con.query(lookSQL, 
-              (function(passedFood){
-                return function(err, result, fields){
-                if(err) throw err;
-                console.log("Result: " + JSON.stringify(result));
-                
-                if(result.length <= 0){
-                  //Food wasn't found in the database, need to add it
-                  var insertSQL = `INSERT INTO foods (name, isVegetarian) VALUES ("${passedFood.Name}", ${passedFood.IsVegetarian})`;
-                  con.query(insertSQL, function (err, result) {
-                    if (err) throw err;
-                  });
-                }
-              }
-            })(food));
-          
-          }
-
+      var con = mysql.createConnection({
+        host: "localhost",
+        user: "root",
+        password: passcodes.mysql,
+        database: "boilerfaves"
       });
+      
+      con.connect(function(err) {
+        if (err) throw err;
 
-    }).catch(err => {console.log(err);});
+      fetch('https://api.hfs.purdue.edu/menus/v1/locations/', {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json'},
+          body: '{}'
+        }).then(response => {
+          return response.json();
+        }).then(json => {
 
-    });
+          var fetchCalls = [];
+
+          for(var i =0; i<json.length; i++){
+            var url = 'https://api.hfs.purdue.edu/menus/v1/locations/' + json[i] + '/' + getTodaysDate() + '/';
+            
+            fetchCalls.push(fetch(url, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+                body: '{}'
+              }).then(response => {
+                return response.json();
+              }).then(json => {
+                var meals = [json.Breakfast, json.Lunch, json.Dinner];
+              
+                var foods = [];
+
+                for(var i = 0; i<meals.length; i++){
+                  for(var j = 0; j<meals[i].length; j++){
+                    for(var k = 0; k<meals[i][j].Items.length; k++){
+                    if(!containsFood(foods, meals[i][j].Items[k])){
+                      foods.push(meals[i][j].Items[k]);
+                    }
+                    }
+                  }
+                }
+
+                return foods;
+                
+              }).catch(err => {console.log(err);}));
+
+          }
+
+          Promise.all(fetchCalls).then(function(values){
+            //List of all foods available today (no duplicates)
+            var allFoods = [];
+
+            for(var i = 0; i<values.length; i++){
+              for(var j =0; j<values[i].length; j++){
+                if(!(containsFood(allFoods, values[i][j]))){
+                  allFoods.push(values[i][j]);
+                }
+              }
+            }
+
+
+              for(var i = 0; i<allFoods.length; i++){
+                var food = allFoods[i];
+                var lookSQL = `SELECT * FROM foods WHERE name="${allFoods[i].Name}"`;
+            
+                con.query(lookSQL, 
+                  (function(passedFood){
+                    return function(err, result, fields){
+                    if(err) throw err;
+                    console.log("Result: " + JSON.stringify(result));
+                    
+                    if(result.length <= 0){
+                      //Food wasn't found in the database, need to add it
+                      var insertSQL = `INSERT INTO foods (name, isVegetarian) VALUES ("${passedFood.Name}", ${passedFood.IsVegetarian})`;
+                      con.query(insertSQL, function (err, result) {
+                        if (err) throw err;
+                      });
+                    }
+                  }
+                })(food));
+              
+              }
+
+          });
+
+        }).catch(err => {console.log(err);});
+
+        });
 
 });
