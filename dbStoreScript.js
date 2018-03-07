@@ -68,7 +68,7 @@ function containsFood(foodList, food){
           var fetchCalls = [];
 
           for(var i =0; i<json.length; i++){
-            var url = 'https://api.hfs.purdue.edu/menus/v1/locations/' + json[i] + '/' + getTodaysDate() + '/';
+            var url = 'https://api.hfs.purdue.edu/menus/v1/locations/' + json[i] + '/' + '3-07-2018' + '/';
             
             fetchCalls.push(fetch(url, {
                 method: 'GET',
@@ -97,6 +97,7 @@ function containsFood(foodList, food){
 
           }
 
+          //All of the dining courts have been called. Time to put the list together
           Promise.all(fetchCalls).then(function(values){
             //List of all foods available today (no duplicates)
             var allFoods = [];
@@ -135,7 +136,7 @@ function containsFood(foodList, food){
           });
 
         }).catch(err => {console.log(err);});
-
+          
         });
 
 });
