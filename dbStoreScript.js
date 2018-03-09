@@ -113,7 +113,9 @@ function containsFood(foodList, food){
 
               for(var i = 0; i<allFoods.length; i++){
                 var food = allFoods[i];
-                var lookSQL = `SELECT * FROM foods WHERE name="${allFoods[i].Name}"`;
+                var lookSQL = `SELECT * FROM foods WHERE name=?`;
+                var inserts = [allFoods[i].Name];
+                lookSQL = mysql.format(lookSQL, inserts);
                 con.query(lookSQL, 
                   (function(passedFood){
                     return function(err, result, fields){
@@ -121,7 +123,9 @@ function containsFood(foodList, food){
                     //console.log("Result: " + JSON.stringify(result));
                     if(result.length <= 0){
                       //Food wasn't found in the database, need to add it
-                      var insertSQL = `INSERT INTO foods (name, isVegetarian) VALUES ("${passedFood.Name}", ${passedFood.IsVegetarian}) ON DUPLICATE KEY UPDATE name=name`;
+                      var insertSQL = `INSERT INTO foods (name, isVegetarian) VALUES (?, ?) ON DUPLICATE KEY UPDATE name=name`;
+                      var inserts = [passedFood.Name, passedFood.IsVegetarian]
+                      insertSQL = mysql.format(insertSQL, inserts);
                       con.query(insertSQL, function (err, result) {
                         if (err) throw err;
                       });

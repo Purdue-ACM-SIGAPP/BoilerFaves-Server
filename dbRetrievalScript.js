@@ -7,7 +7,7 @@ const app = express()
 var mysql = require('mysql')
 
 
-  app.get('/', (req, res) => 
+  app.get('/v1/foods', (req, res) => 
       {
         var con = mysql.createConnection({
             host: "localhost",
@@ -26,5 +26,5 @@ var mysql = require('mysql')
         con.end();
       });
   
-  app.listen(8080, () => console.log('Server is listening on port 3000!'))
+  app.listen(8080, () => console.log('Server is listening on port 8080!'))
   
