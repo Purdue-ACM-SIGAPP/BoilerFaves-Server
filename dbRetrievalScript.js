@@ -7,7 +7,7 @@ const app = express()
 var mysql = require('mysql')
 
 
-  app.get('boilerfaves/v1/foods', (req, res) => 
+  app.get('/v1/foods', (req, res) => 
       {
         var con = mysql.createConnection({
             host: "localhost",
