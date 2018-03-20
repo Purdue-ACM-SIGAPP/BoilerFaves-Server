@@ -9,6 +9,8 @@ var mysql = require('mysql')
 
   app.get('/v1/foods', (req, res) => 
       {
+        try{
+          
         var con = mysql.createConnection({
             host: "localhost",
             user: "root",
@@ -24,7 +26,15 @@ var mysql = require('mysql')
           });
 
         con.end();
+
+        }catch(err){
+          console.log(err);
+        }
+
       });
+    
+   
+
   
   app.listen(80, () => console.log('Server is listening on port 8080!'))
   
