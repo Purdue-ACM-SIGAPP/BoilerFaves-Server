@@ -45,7 +45,7 @@ function containsFood(foodList, food){
   //Once a day, connect to the dining api, store all available foods, then add them to the database as needed
   //https://www.npmjs.com/package/node-schedule
   //Should run every day at 1:02 AM
-  schedule.scheduleJob("Fetch and Store", "* * * * * *", () => {
+  schedule.scheduleJob("Fetch and Store", "0 2 1 * * *", () => {
 
       try{
 
