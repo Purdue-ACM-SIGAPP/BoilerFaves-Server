@@ -26,5 +26,5 @@ var mysql = require('mysql')
         con.end();
       });
   
-  app.listen(8080, () => console.log('Server is listening on port 8080!'))
+  app.listen(80, () => console.log('Server is listening on port 8080!'))
   
