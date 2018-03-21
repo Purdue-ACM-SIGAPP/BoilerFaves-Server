@@ -134,7 +134,7 @@ function storeScript(con){
 
         for(var i = 0; i<allFoods.length; i++){
           var food = allFoods[i];
-          var lookSQL = `SELECT * FROM foods WHERE name=?`;
+          var lookSQL = `SELECT * FROM foods WHERE Name=?`;
           var inserts = [allFoods[i].Name];
           lookSQL = mysql.format(lookSQL, inserts);
           con.query(lookSQL, 
@@ -144,7 +144,7 @@ function storeScript(con){
               //console.log("Result: " + JSON.stringify(result));
               if(result.length <= 0){
                 //Food wasn't found in the database, need to add it
-                var insertSQL = `INSERT INTO foods (name, isVegetarian) VALUES (?, ?) ON DUPLICATE KEY UPDATE name=name`;
+                var insertSQL = `INSERT INTO foods (Name, IsVegetarian) VALUES (?, ?) ON DUPLICATE KEY UPDATE Name=Name`;
                 var inserts = [passedFood.Name, passedFood.IsVegetarian]
                 insertSQL = mysql.format(insertSQL, inserts);
                 con.query(insertSQL, function (err, result) {

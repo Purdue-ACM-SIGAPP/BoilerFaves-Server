@@ -18,7 +18,7 @@ var mysql = require('mysql')
             database: "boilerfaves"
           });
 
-        const retrievalSQL = "SELECT * FROM foods ORDER BY name"
+        const retrievalSQL = "SELECT * FROM foods ORDER BY Name"
         con.query(retrievalSQL, function (err, result) {
             console.log(result);
             res.send(result);
@@ -36,5 +36,5 @@ var mysql = require('mysql')
    
 
   
-  app.listen(80, () => console.log('Server is listening on port 8080!'))
+  app.listen(8080, () => console.log('Server is listening on port 8080!'))
   
