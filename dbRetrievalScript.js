@@ -9,7 +9,9 @@ var mysql = require('mysql')
 
   app.get('/v1/foods', (req, res) => 
       {
-        try{
+        
+	console.log("Retrieval request");
+	try{
           
         var con = mysql.createConnection({
             host: "localhost",
@@ -20,7 +22,7 @@ var mysql = require('mysql')
 
         const retrievalSQL = "SELECT * FROM foods ORDER BY Name"
         con.query(retrievalSQL, function (err, result) {
-            console.log(result);
+            //console.log(result);
             res.send(result);
             if (err) throw err;
           });
@@ -29,7 +31,8 @@ var mysql = require('mysql')
 
         }catch(err){
           console.log(err);
-        }
+          con.end();
+	}
 
       });
     

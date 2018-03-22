@@ -49,20 +49,10 @@ function containsFood(foodList, food){
 
       try{
 
-        var con = mysql.createConnection({
-          host: "localhost",
-          user: "root",
-          password: passcodes.mysql,
-          database: "boilerfaves"
-        });
+        
+	storeScript();
 
 
-        con.connect(function(err) {
-
-          if (err) throw err;
-            storeScript(con);
-
-          })
         }catch(err){
 
           if(err){
@@ -70,13 +60,22 @@ function containsFood(foodList, food){
           }
 
           setTimeout(() => {
-            storeScript(con);
+            storeScript();
           }, 5000)
       }
 
 });
 
-function storeScript(con){
+function storeScript(){
+
+  console.log("Store script run");
+
+var con = mysql.createConnection({
+          host: "localhost",
+          user: "root",
+          password: passcodes.mysql,
+          database: "boilerfaves"
+        });
 
   fetch('https://api.hfs.purdue.edu/menus/v1/locations/', {
     method: 'GET',
@@ -89,8 +88,8 @@ function storeScript(con){
     var fetchCalls = [];
 
     for(var i =0; i<json.length; i++){
-      var url = 'https://api.hfs.purdue.edu/menus/v1/locations/' + json[i] + '/' + '3-07-2018' + '/';
-      
+      var url = 'https://api.hfs.purdue.edu/menus/v1/locations/' + json[i] + '/' + getTodaysDate() + '/';
+
       fetchCalls.push(fetch(url, {
           method: 'GET',
           headers: {'Content-Type': 'application/json'},
@@ -113,7 +112,7 @@ function storeScript(con){
           }
 
           return foods;
-          
+		          
         }).catch(err => {console.log(err);}));
 
     }
@@ -122,6 +121,7 @@ function storeScript(con){
     Promise.all(fetchCalls).then(function(values){
       //List of all foods available today (no duplicates)
       var allFoods = [];
+
 
       for(var i = 0; i<values.length; i++){
         for(var j =0; j<values[i].length; j++){
@@ -134,27 +134,16 @@ function storeScript(con){
 
         for(var i = 0; i<allFoods.length; i++){
           var food = allFoods[i];
-          var lookSQL = `SELECT * FROM foods WHERE Name=?`;
-          var inserts = [allFoods[i].Name];
-          lookSQL = mysql.format(lookSQL, inserts);
-          con.query(lookSQL, 
-            (function(passedFood){
-              return function(err, result, fields){
-              if(err) throw err;
-              //console.log("Result: " + JSON.stringify(result));
-              if(result.length <= 0){
-                //Food wasn't found in the database, need to add it
-                var insertSQL = `INSERT INTO foods (Name, IsVegetarian) VALUES (?, ?) ON DUPLICATE KEY UPDATE Name=Name`;
-                var inserts = [passedFood.Name, passedFood.IsVegetarian]
-                insertSQL = mysql.format(insertSQL, inserts);
-                con.query(insertSQL, function (err, result) {
-                  if (err) throw err;
-                });
-              }
-            }
-          })(food));
-        
-        }
+          var insertSQL = `INSERT INTO foods (Name, IsVegetarian) VALUES (?, ?) ON DUPLICATE KEY UPDATE Name=Name`;
+       	  var inserts = [food.Name, food.IsVegetarian]
+	  insertSQL = mysql.format(insertSQL, inserts);
+
+	  con.query(insertSQL, function (err, result) {
+	    if (err) throw err;
+	  });
+       }
+
+	con.end();
 
     });
 
